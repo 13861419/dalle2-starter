@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node ./bin/www",
     "tailwind": "npx tailwindcss -i ./src/stylesheets/style.css -o ./public/stylesheets/style.css",
-    "build": "npm run tailwind && npm run start"
+    "build": "npm run tailwind && npm run dev"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
