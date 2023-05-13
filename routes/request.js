@@ -24,7 +24,7 @@ if (!fs.existsSync(imageFolder)) {
 /* Generation completion */
 router.post('/generation', async function (req, res, next) {
   var prompt = req.body;
-
+  
   try {
     const response = await openai.createImage({
       "prompt": prompt.promptText,
@@ -57,85 +57,5 @@ router.post('/generation', async function (req, res, next) {
 
 
 });
-
-/* Variation completion */
-router.post('/variation', async function (req, res, next) {
-  var prompt = req.body;
-
-  const base64 = prompt.imageData.split(",")[1];
-  const buf = Buffer.from(base64, 'base64');
-  buf.name = "image.png";
-
-  try {
-    const response = await openai.createImageVariation(
-      buf,
-      parseInt(prompt.promptNum),
-      prompt.promptRes,
-      `b64_json`
-    );
-
-    res.send(response.data.data)
-
-    if (prompt.promptSave == true) {
-
-      for (i = 0; i < response.data.data.length; i++) {
-        let promptName = ("Variation - " + prompt.promptTime.substring(0, 50) + " - " + i).replace(/[/\\?%*:|"<>]/g, '-');
-        const filePath = imageFolder + '/' + promptName + '.jpg';
-        fs.writeFile(filePath, response.data.data[i].b64_json, 'base64', (err) => {
-          if (err) {
-            console.error(err);
-          }
-        });
-      }
-    }
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({
-      error: "Something went wrong."
-    });
-  }
-});
-
-/* Variation completion */
-router.post('/edits', async function (req, res, next) {
-  var prompt = req.body;
-
-  const base64 = prompt.imageData.split(",")[1];
-  const buf = Buffer.from(base64, 'base64');
-  buf.name = "image.png";
-
-  try {
-    const response = await openai.createImageEdit(
-      buf,
-      buf,
-      prompt.promptText,
-      parseInt(prompt.promptNum),
-      prompt.promptRes,
-      `b64_json`
-    );
-
-    res.send(response.data.data)
-
-    if (prompt.promptSave == true) {
-
-      for (i = 0; i < response.data.data.length; i++) {
-        let promptName = ("Edit - " + prompt.promptTime.substring(0, 50) + " - " + i).replace(/[/\\?%*:|"<>]/g, '-');
-        const filePath = imageFolder + '/' + promptName + '.jpg';
-        fs.writeFile(filePath, response.data.data[i].b64_json, 'base64', (err) => {
-          if (err) {
-            console.error(err);
-          }
-        });
-      }
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({
-      error: "Something went wrong."
-    });
-  }
-});
-
 
 module.exports = router;
